@@ -1,14 +1,14 @@
 here you find little helpers for pitch box. like schematics code fragemnts for additional goodies. testtones . routines etc. etc
 
 all code is copyright StuKa  Engineering, or flokason best audio or mentioned in the code. 
-none of this information should be used to generate money. please use it shareit modify and repost it. 
-all code is under copyleft. use it share it, change it and push it back here.  but make no money with it. 
-no commercial usage. 
-all schematics are for information only and for users of our products. 
-all of this stuff is beta and prototyp based. we dont give any warranty if using it. 
+none of this information should be used to generate money. 
+
+All code, schematics, and information provided in this repository are licensed under a Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International License (CC BY-NC-SA 4.0). You are free to use, modify, and distribute the content for non-commercial purposes, provided that you give appropriate credit to the original author(s) and share any derivative works under the same license.
+
+Please note that all schematics are for informational purposes only and intended for users of our products. Additionally, all materials are in beta and prototype stages. We do not provide any warranty or guarantee for their use.
 
 
-here so far soem little things. 
+here so far some little bits and pieces. 
 
 PitchUI20.
 ***********
@@ -35,3 +35,7 @@ the old vinylium testtone CD ripped as apple.aiff without the music as we dont o
 testtones sox scripts
 *********************
 generate on the fly some important test tones. 
+
+i2c remaintime and BOM
+**********************
+the old original StuKa, vinylium i2c interface with oboslete Philips SAA1064 and PC8574.
