@@ -1,14 +1,12 @@
-here you find little helpers for pitch box. like schematics code fragemnts for additional goodies. testtones . routines etc. etc
+Here you'll find helpful resources for your pitch box, including schematics, code fragments for additional features, test tones, routines, and more.
 
-all code is copyright StuKa  Engineering, or flokason best audio or mentioned in the code. 
-none of this information should be used to generate money. 
+All code is copyright StuKa Engineering or Flokason Best Audio, unless otherwise mentioned in the code. None of this information should be used for commercial purposes.
 
 All code, schematics, and information provided in this repository are licensed under a Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International License (CC BY-NC-SA 4.0). You are free to use, modify, and distribute the content for non-commercial purposes, provided that you give appropriate credit to the original author(s) and share any derivative works under the same license.
 
-Please note that all schematics are for informational purposes only and intended for users of our products. Additionally, all materials are in beta and prototype stages. We do not provide any warranty or guarantee for their use.
+Please note that all schematics are for informational purposes only and are intended for users of our products. Additionally, all materials are in beta and prototype stages. We do not provide any warranty or guarantee for their use.
 
-
-here so far some little bits and pieces. 
+Here are some bits and pieces we've assembled so far.
 
 PitchUI20.
 ***********
