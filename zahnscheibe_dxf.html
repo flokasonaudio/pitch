@@ -1,0 +1,85 @@
+<!doctype html>
+<html lang="de"><head><meta charset="utf-8"><title>Zahnscheibe DXF</title>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<style>
+body{font-family:system-ui,sans-serif;margin:16px;display:flex;gap:24px;flex-wrap:wrap}
+form{display:grid;grid-template-columns:auto 90px;gap:6px 10px;align-content:start}
+input{width:90px}
+button{grid-column:1/3;padding:8px;font-size:15px;margin-top:8px}
+svg{border:1px solid #888;background:#fff;width:480px;height:480px}
+</style></head><body>
+<form id="f">
+<label>Aussendurchmesser (mm)</label><input name="od" type="number" step="any" value="65">
+<label>Anzahl Zähne</label><input name="n" type="number" value="32">
+<label>Zahntiefe (mm)</label><input name="depth" type="number" step="any" value="5">
+<label>Zahnanteil (%)</label><input name="duty" type="number" step="any" value="50">
+<label>Mittelloch Ø (mm)</label><input name="cd" type="number" step="any" value="20">
+<label>Befestigungsloch Ø (mm)</label><input name="hd" type="number" step="any" value="4">
+<label>Lochabstand Paar 1 (mm)</label><input name="d1" type="number" step="any" value="44">
+<label>Lochabstand Paar 2 (mm)</label><input name="d2" type="number" step="any" value="44">
+<label>Rotation Löcher (°)</label><input name="rot" type="number" step="any" value="0">
+<button type="button" id="dl">DXF herunterladen</button>
+</form>
+<svg id="sv" viewBox="-40 -40 80 80"></svg>
+<script>
+const f=document.getElementById('f');
+const v=n=>parseFloat(f[n].value);
+function geom(){
+  const Ro=v('od')/2,Rr=Ro-v('depth'),N=Math.round(v('n')),duty=v('duty')/100;
+  const pitch=2*Math.PI/N,w=pitch*duty;
+  const pts=[];// [x,y,bulge]
+  const P=(r,a)=>[r*Math.cos(a),r*Math.sin(a)];
+  for(let i=0;i<N;i++){
+    const a0=i*pitch;
+    pts.push([...P(Ro,a0),Math.tan(w/4)]);        // Zahnkopf-Bogen
+    pts.push([...P(Ro,a0+w),0]);                  // radial runter
+    pts.push([...P(Rr,a0+w),Math.tan((pitch-w)/4)]); // Lückengrund-Bogen
+    pts.push([...P(Rr,a0+pitch),0]);              // radial rauf
+  }
+  const holes=[],hr=v('hd')/2,rot=v('rot')*Math.PI/180;
+  [[v('d1')/2,0],[v('d1')/2,Math.PI],[v('d2')/2,Math.PI/2],[v('d2')/2,3*Math.PI/2]]
+    .forEach(([r,a])=>holes.push([...P(r,a+rot),hr]));
+  holes.push([0,0,v('cd')/2]);
+  return {pts,holes,Ro};
+}
+function draw(){
+  const g=geom();
+  let d='';
+  const N=g.pts.length;
+  // SVG-Pfad aus Bulges (y gespiegelt)
+  const arc=(p,q,b)=>{
+    const dx=q[0]-p[0],dy=q[1]-p[1],c=Math.hypot(dx,dy);
+    const r=c/2*(1+b*b)/(2*Math.abs(b))*1; // Radius = c*(1+b²)/(4|b|)
+    return `A${r.toFixed(4)} ${r.toFixed(4)} 0 0 ${b>0?0:1} ${q[0].toFixed(4)} ${(-q[1]).toFixed(4)}`;
+  };
+  d=`M${g.pts[0][0]} ${-g.pts[0][1]}`;
+  for(let i=0;i<N;i++){
+    const p=g.pts[i],q=g.pts[(i+1)%N];
+    d+= p[2]===0 ? `L${q[0].toFixed(4)} ${(-q[1]).toFixed(4)}` : arc(p,q,p[2]);
+  }
+  d+='Z';
+  let s=`<path d="${d}" fill="#dde" stroke="#222" stroke-width=".2"/>`;
+  g.holes.forEach(h=>s+=`<circle cx="${h[0]}" cy="${-h[1]}" r="${h[2]}" fill="#fff" stroke="#222" stroke-width=".2"/>`);
+  const m=g.Ro+3;
+  sv.setAttribute('viewBox',`${-m} ${-m} ${2*m} ${2*m}`);
+  sv.innerHTML=s;
+}
+function dxf(){
+  const g=geom();
+  const L=[];const a=(c,x)=>L.push(c,x);
+  a(0,'SECTION');a(2,'HEADER');a(9,'$ACADVER');a(1,'AC1009');a(9,'$INSUNITS');a(70,4);a(0,'ENDSEC');
+  a(0,'SECTION');a(2,'ENTITIES');
+  a(0,'POLYLINE');a(8,'0');a(66,1);a(70,1);
+  g.pts.forEach(p=>{a(0,'VERTEX');a(8,'0');a(10,p[0].toFixed(6));a(20,p[1].toFixed(6));a(30,0);if(p[2])a(42,p[2].toFixed(8));});
+  a(0,'SEQEND');a(8,'0');
+  g.holes.forEach(h=>{a(0,'CIRCLE');a(8,'0');a(10,h[0].toFixed(6));a(20,h[1].toFixed(6));a(30,0);a(40,h[2].toFixed(6));});
+  a(0,'ENDSEC');a(0,'EOF');
+  return L.join('\n')+'\n';
+}
+f.addEventListener('input',draw);draw();
+document.getElementById('dl').onclick=()=>{
+  const b=new Blob([dxf()],{type:'application/dxf'});
+  const u=URL.createObjectURL(b),el=document.createElement('a');
+  el.href=u;el.download=`zahnscheibe_${v('od')}mm_${v('n')}z.dxf`;el.click();URL.revokeObjectURL(u);
+};
+</script></body></html>
